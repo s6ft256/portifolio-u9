@@ -12,6 +12,9 @@ export default function Portfolio() {
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
   const observerRef = useRef<IntersectionObserver | null>(null)
   const [raindrops, setRaindrops] = useState<Array<{ id: number; x: number; delay: number; duration: number }>>([])
+  const [isVisible, setIsVisible] = useState(false)
+  const [activeSection, setActiveSection] = useState("")
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -102,8 +105,16 @@ export default function Portfolio() {
     }))
   }
 
+  const handlePreviewCertificate = (imageSrc: string) => {
+    setPreviewImage(imageSrc)
+  }
+
+  const handleClosePreview = () => {
+    setPreviewImage(null)
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 overflow-x-hidden relative">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 relative overflow-hidden">
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         {raindrops.map((drop) => (
           <div
@@ -171,6 +182,30 @@ export default function Portfolio() {
           transform: `scale(${scrollY > 100 ? 1.8 : 1.2}) rotate(${-scrollY * 0.5}deg)`,
         }}
       />
+
+      {previewImage && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={handleClosePreview}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] w-full">
+            <button
+              onClick={handleClosePreview}
+              className="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors duration-200"
+            >
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <img
+              src={previewImage || "/placeholder.svg"}
+              alt="Certificate Preview"
+              className="w-full h-full object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
 
       <nav className="fixed top-0 w-full z-40 glass border-b border-white/20 transition-all duration-700 hover:backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -306,7 +341,7 @@ export default function Portfolio() {
         />
       </section>
 
-      <section id="about" className="py-20 px-6 bg-gradient-to-r from-slate-50/50 to-blue-50/50" data-animate>
+      <section id="about" className="py-20 px-6" data-animate>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-6 gradient-text">About Me</h2>
@@ -748,6 +783,376 @@ export default function Portfolio() {
 
           <div className="mb-16">
             <h3 className="text-2xl font-bold mb-8 text-center gradient-text">Professional Certifications</h3>
+            <p className="text-center text-muted-foreground mb-12 max-w-3xl mx-auto">
+              Professional credentials demonstrating expertise in safety management and technical development
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* IOSH Certificate */}
+              <div className="glass-card p-8 soft-shadow hover-lift transform hover:scale-105 transition-all duration-500 group">
+                <div className="flex items-center justify-between mb-6">
+                  <Badge variant="secondary" className="text-xs">
+                    Safety Management
+                  </Badge>
+                  <div className="text-2xl">🛡️</div>
+                </div>
+
+                <div className="mb-6">
+                  <img
+                    src="/iosh-certificate.jpg"
+                    alt="IOSH Managing Safely Certificate"
+                    className="w-full h-48 object-cover rounded-lg soft-shadow group-hover:scale-105 transition-all duration-500 cursor-pointer"
+                    onClick={() => handlePreviewCertificate("/iosh-certificate.jpg")}
+                  />
+                </div>
+
+                <h4 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-300">
+                  IOSH Managing Safely
+                </h4>
+
+                <p className="text-muted-foreground mb-4 leading-relaxed">
+                  Institution of Occupational Safety and Health certification in safety management, awarded by Speed Way
+                  Safety Training Centre LLC.
+                </p>
+
+                <div className="mb-6">
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <Badge variant="outline" className="text-xs">
+                      Certificate #09690803-01-IHQK
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      Issued: May 13, 2025
+                    </Badge>
+                  </div>
+                  <div className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-semibold text-primary">Key Areas:</span> Risk Assessment, Incident
+                      Investigation, Safety Leadership, Legal Compliance
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={() => handleDownload("/iosh-certificate.jpg", "IOSH_Certificate_Elius_Niwamanya.jpg")}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+                >
+                  Download Certificate
+                </Button>
+              </div>
+
+              {/* Coding Fundamentals Certificate */}
+              <div className="glass-card p-8 soft-shadow hover-lift transform hover:scale-105 transition-all duration-500 group">
+                <div className="flex items-center justify-between mb-6">
+                  <Badge variant="secondary" className="text-xs">
+                    Programming
+                  </Badge>
+                  <div className="text-2xl">💻</div>
+                </div>
+
+                <div className="mb-6">
+                  <img
+                    src="/certificate.jpg"
+                    alt="Coding Fundamentals Certificate"
+                    className="w-full h-48 object-cover rounded-lg soft-shadow group-hover:scale-105 transition-all duration-500 cursor-pointer"
+                    onClick={() => handlePreviewCertificate("/certificate.jpg")}
+                  />
+                </div>
+
+                <h4 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-300">
+                  Coding Fundamentals
+                </h4>
+
+                <p className="text-muted-foreground mb-4 leading-relaxed">
+                  Certificate of completion from Grasshopper, demonstrating foundational programming skills and
+                  technical competency.
+                </p>
+
+                <div className="mb-6">
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <Badge variant="outline" className="text-xs">
+                      Grasshopper Certified
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      Completed: July 11, 2019
+                    </Badge>
+                  </div>
+                  <div className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground">
+                      <span className="font-semibold text-primary">Foundation:</span> Programming Logic, Problem
+                      Solving, Code Structure, Development Principles
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={() => handleDownload("/certificate.jpg", "Coding_Certificate_Elius_Niwamanya.jpg")}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+                >
+                  Download Certificate
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" className="py-20 px-6 bg-gradient-to-r from-blue-50/50 to-purple-50/50" data-animate>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-6 gradient-text">Let's Work Together</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Ready to bring safety expertise and technical innovation to your next project? Let's discuss how we can
+              create secure, efficient solutions together.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12 mb-12">
+            {/* Contact Information */}
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-xl font-bold mb-6 gradient-text">Get In Touch</h3>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white">
+                      📧
+                    </div>
+                    <div>
+                      <p className="font-semibold">Email</p>
+                      <p className="text-muted-foreground">niwamanyaelius95@gmail.com</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white">
+                      📱
+                    </div>
+                    <div>
+                      <p className="font-semibold">Phone</p>
+                      <p className="text-muted-foreground">+971 55 262 3327</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white">
+                      🌍
+                    </div>
+                    <div>
+                      <p className="font-semibold">Location</p>
+                      <p className="text-muted-foreground">UAE</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-lg font-semibold mb-4 text-primary">Services Offered</h4>
+                <ul className="space-y-2 text-muted-foreground">
+                  <li className="flex items-start space-x-2">
+                    <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>HSE Management System Development</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Safety Training & Compliance</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Web Application Development</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Data Analysis & Visualization</span>
+                  </li>
+                  <li className="flex items-start space-x-2">
+                    <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <span>Cybersecurity Assessment</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="flex gap-4">
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 transition-all duration-300"
+                >
+                  <a href="https://wa.me/971552623327" target="_blank" rel="noopener noreferrer">
+                    💬 WhatsApp
+                  </a>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="glass border-white/20 bg-transparent hover:bg-blue-500/10 transition-all duration-300"
+                >
+                  <a href="tel:+971552623327">📞 Schedule a Call</a>
+                </Button>
+              </div>
+            </div>
+
+            {/* Contact Form */}
+            <div className="glass-card p-8">
+              <h3 className="text-xl font-bold mb-6 gradient-text">Send a Message</h3>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium mb-2">
+                      Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium mb-2">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="company" className="block text-sm font-medium mb-2">
+                    Company
+                  </label>
+                  <input
+                    type="text"
+                    id="company"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="inquiryType" className="block text-sm font-medium mb-2">
+                    Inquiry Type
+                  </label>
+                  <select
+                    id="inquiryType"
+                    name="inquiryType"
+                    value={formData.inquiryType}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                  >
+                    <option value="">Select an option</option>
+                    <option value="HSE Consultation">HSE Consultation</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Data Analysis">Data Analysis</option>
+                    <option value="Cybersecurity">Cybersecurity</option>
+                    <option value="General Inquiry">General Inquiry</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium mb-2">
+                    Message *
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    required
+                    rows={4}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 resize-none"
+                  />
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+                >
+                  Send Message
+                </Button>
+                <p className="text-xs text-muted-foreground text-center">
+                  Choose between Email or WhatsApp when sending your message
+                </p>
+              </form>
+            </div>
+          </div>
+
+          {/* Social Links */}
+          <div className="text-center">
+            <h4 className="text-lg font-semibold mb-6 gradient-text">Connect With Me</h4>
+            <div className="flex justify-center space-x-4 flex-wrap gap-4">
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="glass border-white/20 bg-transparent hover:bg-blue-500/10"
+              >
+                <a
+                  href="https://www.linkedin.com/in/elius-niwamanya-026228187"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  LinkedIn
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="glass border-white/20 bg-transparent hover:bg-blue-500/10"
+              >
+                <a href="https://www.facebook.com/share/1BGED9N6Ax/" target="_blank" rel="noopener noreferrer">
+                  Facebook
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="glass border-white/20 bg-transparent hover:bg-blue-500/10"
+              >
+                <a href="https://x.com/Elius7c" target="_blank" rel="noopener noreferrer">
+                  Twitter
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="glass border-white/20 bg-transparent hover:bg-blue-500/10"
+              >
+                <a href="https://www.instagram.com/niwamanyaelius95/" target="_blank" rel="noopener noreferrer">
+                  Instagram
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="glass border-white/20 bg-transparent hover:bg-blue-500/10"
+              >
+                <a href="https://www.reddit.com/u/NIWAMANYAELIUS/" target="_blank" rel="noopener noreferrer">
+                  Reddit
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                className="glass border-white/20 bg-transparent hover:bg-blue-500/10"
+              >
+                <a href="https://discord.gg/BzhZpcvC" target="_blank" rel="noopener noreferrer">
+                  Discord
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
       </section>

@@ -131,8 +131,26 @@
     @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
   }
 
+  .glass-matrix {
+    background: rgba(0, 20, 0, 0.1);
+    backdrop-filter: blur(20px) saturate(180%) brightness(110%);
+    border: 1px solid rgba(0, 255, 65, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 255, 65, 0.1), 0 0 20px rgba(0, 255, 65, 0.05) inset;
+  }
+
+  .glass-matrix-card {
+    background: rgba(0, 20, 0, 0.08);
+    backdrop-filter: blur(24px) saturate(200%) brightness(120%);
+    border: 1px solid rgba(0, 255, 65, 0.15);
+    box-shadow: 0 12px 40px rgba(0, 255, 65, 0.15), 0 0 0 1px rgba(0, 255, 65, 0.08) inset;
+  }
+
+  .matrix-glow {
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.4), 0 0 40px rgba(0, 255, 65, 0.2), 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
   .gradient-text {
-    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent;
   }
 
   .soft-shadow {
@@ -180,7 +198,6 @@
     background: rgba(255, 255, 255, 0.05);
   }
 
-  /* Enhanced glassmorphism and cinematic effects */
   .glass-enhanced {
     @apply bg-white/8 backdrop-blur-xl border border-white/15 shadow-2xl;
     backdrop-filter: blur(24px) saturate(200%) brightness(110%);
@@ -211,37 +228,27 @@
     backdrop-filter: blur(32px) saturate(180%) brightness(120%);
   }
 
-  /* Advanced cinematic animations and effects */
-  .animate-typewriter {
-    animation: typewriter 3s steps(40, end), blink-caret 0.75s step-end infinite;
+  .animate-matrix-fall {
+    animation: matrixFall 3s linear infinite;
   }
 
-  .animate-slide-in-up {
-    animation: slideInUp 0.8s ease-out forwards;
+  .animate-matrix-fall-fast {
+    animation: matrixFallFast 2s linear infinite;
   }
 
-  .animate-spin-slow {
-    animation: spin 8s linear infinite;
+  .animate-matrix-fall-slow {
+    animation: matrixFallSlow 4s linear infinite;
   }
 
-  .animate-rainfall {
-    animation: rainfall 2s linear infinite;
+  .animate-matrix-fall-medium {
+    animation: matrixFallMedium 2.5s linear infinite;
   }
 
-  .animate-rainfall-intense {
-    animation: rainfallIntense 1.5s linear infinite;
-  }
-
-  .animate-rainfall-heavy {
-    animation: rainfallHeavy 1s linear infinite;
-  }
-
-  .animate-rainfall-light {
-    animation: rainfallLight 3s linear infinite;
-  }
-
-  .animate-thunder-flash {
-    animation: thunderFlash 8s ease-in-out infinite;
+  .matrix-char {
+    font-family: "Courier New", monospace;
+    color: #00ff41;
+    text-shadow: 0 0 10px #00ff41;
+    opacity: 0.8;
   }
 
   .ripple-effect {
@@ -469,82 +476,93 @@ html {
   }
 }
 
-@keyframes rainfall {
+@keyframes matrixFall {
   0% {
-    transform: translateY(-100vh) rotate(15deg);
+    transform: translateY(-100vh);
     opacity: 0;
   }
   10% {
-    opacity: 0.6;
+    opacity: 1;
   }
   90% {
-    opacity: 0.6;
+    opacity: 1;
   }
   100% {
-    transform: translateY(100vh) rotate(15deg);
+    transform: translateY(100vh);
     opacity: 0;
   }
 }
 
-@keyframes rainfallIntense {
+@keyframes matrixFallFast {
   0% {
-    transform: translateY(-120vh) rotate(20deg);
+    transform: translateY(-120vh);
     opacity: 0;
   }
   5% {
-    opacity: 0.9;
+    opacity: 1;
   }
   95% {
-    opacity: 0.9;
+    opacity: 1;
   }
   100% {
-    transform: translateY(120vh) rotate(20deg);
+    transform: translateY(120vh);
     opacity: 0;
   }
 }
 
-@keyframes rainfallHeavy {
+@keyframes matrixFallSlow {
   0% {
-    transform: translateY(-150vh) rotate(25deg) scale(1.5);
-    opacity: 0;
-  }
-  3% {
-    opacity: 1;
-  }
-  97% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(150vh) rotate(25deg) scale(1.5);
-    opacity: 0;
-  }
-}
-
-@keyframes rainfallLight {
-  0% {
-    transform: translateY(-80vh) rotate(10deg) scale(0.7);
+    transform: translateY(-80vh);
     opacity: 0;
   }
   15% {
-    opacity: 0.4;
+    opacity: 0.6;
   }
   85% {
-    opacity: 0.4;
+    opacity: 0.6;
   }
   100% {
-    transform: translateY(80vh) rotate(10deg) scale(0.7);
+    transform: translateY(80vh);
     opacity: 0;
   }
 }
 
-@keyframes thunderFlash {
-  0%,
-  90%,
-  100% {
+@keyframes matrixFallMedium {
+  0% {
+    transform: translateY(-100vh);
     opacity: 0;
   }
-  5%,
-  85% {
-    opacity: 0.3;
+  8% {
+    opacity: 0.8;
   }
+  92% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+@keyframes matrixGlitch {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-2px);
+  }
+  40% {
+    transform: translateX(2px);
+  }
+  60% {
+    transform: translateX(-1px);
+  }
+  80% {
+    transform: translateX(1px);
+  }
+}
+
+.animate-matrix-glitch {
+  animation: matrixGlitch 0.3s ease-in-out infinite;
 }

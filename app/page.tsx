@@ -1,18 +1,42 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Download, Github, ExternalLink, Phone, Mail } from "lucide-react"
 
 export default function Portfolio() {
   const [scrollY, setScrollY] = useState(0)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [visibleSections, setVisibleSections] = useState<Set<string>>(new Set())
   const observerRef = useRef<IntersectionObserver | null>(null)
+  const [raindrops, setRaindrops] = useState<Array<{ id: number; x: number; delay: number; duration: number }>>([])
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    company: "",
+    inquiryType: "",
+    message: "",
+  })
 
   useEffect(() => {
+    const generateRaindrops = () => {
+      const drops = []
+      for (let i = 0; i < 50; i++) {
+        drops.push({
+          id: i,
+          x: Math.random() * 100,
+          delay: Math.random() * 5,
+          duration: 2 + Math.random() * 3,
+        })
+      }
+      setRaindrops(drops)
+    }
+
+    generateRaindrops()
+
     const handleScroll = () => setScrollY(window.scrollY)
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY })
@@ -42,70 +66,6 @@ export default function Portfolio() {
     }
   }, [])
 
-  const projects = [
-    {
-      id: 1,
-      title: "HSE Monitoring Web App",
-      category: "Safety Management",
-      image: "/modern-saas-dashboard.png",
-      tags: ["React", "Safety", "Monitoring", "IOSH"],
-      description:
-        "Comprehensive Health, Safety & Environment monitoring system for workplace compliance and risk management",
-      github: "https://github.com/s6ft256/track.git",
-      live: "https://hse-monitoring.vercel.app",
-    },
-    {
-      id: 2,
-      title: "E-commerce Platform",
-      category: "Web Development",
-      image: "/modern-ecommerce-interface.png",
-      tags: ["React", "Next.js", "Stripe"],
-      description: "A full-stack e-commerce solution with modern UI/UX",
-      github: "https://github.com/eliusniwamanya/ecommerce-platform",
-      live: "https://ecommerce-demo.vercel.app",
-    },
-    {
-      id: 3,
-      title: "Safety Management System",
-      category: "Web Development",
-      image: "/modern-saas-dashboard.png",
-      tags: ["IOSH", "Safety", "Management", "React"],
-      description: "Comprehensive safety management platform for workplace safety compliance",
-      github: "https://github.com/eliusniwamanya/safety-management",
-      live: "https://safety-mgmt.vercel.app",
-    },
-    {
-      id: 4,
-      title: "Mobile App UI",
-      category: "UI/UX Design",
-      image: "/sleek-mobile-app-interface.png",
-      tags: ["Mobile", "Figma", "Prototyping"],
-      description: "Intuitive mobile app design for fitness tracking with smooth animations",
-      github: "https://github.com/eliusniwamanya/fitness-app-ui",
-      live: "https://fitness-ui-demo.vercel.app",
-    },
-    {
-      id: 5,
-      title: "Photography Portfolio",
-      category: "Photography",
-      image: "/artistic-photography-portfolio.png",
-      tags: ["Portrait", "Commercial", "Editorial"],
-      description: "Professional photography showcase website with gallery management",
-      github: "https://github.com/eliusniwamanya/photo-portfolio",
-      live: "https://photo-showcase.vercel.app",
-    },
-    {
-      id: 6,
-      title: "Art Direction Platform",
-      category: "Creative Direction",
-      image: "/creative-art-direction.png",
-      tags: ["Campaign", "Visual", "Strategy"],
-      description: "Creative campaign management platform for luxury fashion brands",
-      github: "https://github.com/eliusniwamanya/art-direction",
-      live: "https://creative-platform.vercel.app",
-    },
-  ]
-
   const handleDownload = (url: string, filename: string) => {
     const link = document.createElement("a")
     link.href = url
@@ -115,23 +75,100 @@ export default function Portfolio() {
     document.body.removeChild(link)
   }
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const subject = `${formData.inquiryType || "General Inquiry"} - ${formData.name}`
+    const message = `Name: ${formData.name}\nEmail: ${formData.email}\nCompany: ${formData.company}\nInquiry Type: ${formData.inquiryType}\n\nMessage:\n${formData.message}`
+
+    // Show options to user
+    const choice = window.confirm("Choose how to send your message:\n\nOK = Email\nCancel = WhatsApp")
+
+    if (choice) {
+      // Send via email
+      const mailtoLink = `mailto:niwamanyaelius95@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`
+      window.location.href = mailtoLink
+    } else {
+      // Send via WhatsApp
+      const whatsappMessage = `*${subject}*\n\n${message}`
+      const whatsappLink = `https://wa.me/971552623327?text=${encodeURIComponent(whatsappMessage)}`
+      window.open(whatsappLink, "_blank")
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }))
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 overflow-x-hidden relative">
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        {raindrops.map((drop) => (
+          <div
+            key={drop.id}
+            className="absolute w-0.5 h-8 bg-gradient-to-b from-blue-200/30 to-transparent rounded-full animate-rainfall"
+            style={{
+              left: `${drop.x}%`,
+              animationDelay: `${drop.delay}s`,
+              animationDuration: `${drop.duration}s`,
+              transform: `rotate(15deg)`,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="fixed inset-0 pointer-events-none z-1 overflow-hidden">
+        <div
+          className="absolute w-2 h-2 bg-blue-300/20 rounded-full animate-float-complex"
+          style={{
+            top: "10%",
+            left: "5%",
+            animationDelay: "0s",
+          }}
+        />
+        <div
+          className="absolute w-1 h-1 bg-purple-300/25 rounded-full animate-float-complex"
+          style={{
+            top: "20%",
+            right: "10%",
+            animationDelay: "2s",
+          }}
+        />
+        <div
+          className="absolute w-3 h-3 bg-cyan-300/15 rounded-full animate-float-complex"
+          style={{
+            bottom: "30%",
+            left: "15%",
+            animationDelay: "4s",
+          }}
+        />
+        <div
+          className="absolute w-1.5 h-1.5 bg-pink-300/20 rounded-full animate-float-complex"
+          style={{
+            top: "60%",
+            right: "20%",
+            animationDelay: "1s",
+          }}
+        />
+      </div>
+
       <div
-        className="fixed w-6 h-6 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-full pointer-events-none z-50 mix-blend-difference transition-all duration-300 ease-out"
+        className="fixed w-8 h-8 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full pointer-events-none z-50 mix-blend-difference transition-all duration-300 ease-out animate-pulse-slow"
         style={{
-          left: mousePosition.x - 12,
-          top: mousePosition.y - 12,
-          transform: `scale(${scrollY > 100 ? 1.8 : 1}) rotate(${scrollY * 0.5}deg)`,
-          boxShadow: `0 0 20px rgba(59, 130, 246, 0.3)`,
+          left: mousePosition.x - 16,
+          top: mousePosition.y - 16,
+          transform: `scale(${scrollY > 100 ? 2.2 : 1.5}) rotate(${scrollY * 0.8}deg)`,
+          boxShadow: `0 0 30px rgba(59, 130, 246, 0.4), 0 0 60px rgba(147, 51, 234, 0.2)`,
         }}
       />
       <div
-        className="fixed w-3 h-3 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full pointer-events-none z-49 mix-blend-multiply transition-all duration-500 ease-out"
+        className="fixed w-4 h-4 bg-gradient-to-r from-purple-400/15 to-pink-400/15 rounded-full pointer-events-none z-49 mix-blend-multiply transition-all duration-700 ease-out"
         style={{
-          left: mousePosition.x - 6,
-          top: mousePosition.y - 6,
-          transform: `scale(${scrollY > 100 ? 1.2 : 0.8}) rotate(${-scrollY * 0.3}deg)`,
+          left: mousePosition.x - 8,
+          top: mousePosition.y - 8,
+          transform: `scale(${scrollY > 100 ? 1.8 : 1.2}) rotate(${-scrollY * 0.5}deg)`,
         }}
       />
 
@@ -142,13 +179,6 @@ export default function Portfolio() {
               Elius Niwamanya
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <a
-                href="#work"
-                className="text-sm font-medium hover:text-primary transition-all duration-500 hover:scale-110 relative group"
-              >
-                Work
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 group-hover:w-full"></span>
-              </a>
               <a
                 href="#about"
                 className="text-sm font-medium hover:text-primary transition-all duration-500 hover:scale-110 relative group"
@@ -206,7 +236,7 @@ export default function Portfolio() {
           <div
             className={`transition-all duration-1000 ${visibleSections.has("hero") ? "animate-fade-in-up" : "opacity-0 translate-y-10"}`}
           >
-            <div className="w-32 h-32 mx-auto mb-8 rounded-full overflow-hidden soft-shadow animate-float relative group cursor-pointer">
+            <div className="w-48 h-48 mx-auto mb-8 rounded-full overflow-hidden soft-shadow animate-float relative group cursor-pointer">
               <img
                 src="/el.jpg"
                 alt="Elius Niwamanya - Professional portrait"
@@ -216,7 +246,7 @@ export default function Portfolio() {
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-blue-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
-              <div className="absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-all duration-700 animate-spin-slow"></div>
+              <div className="absolute inset-0 rounded-full border-2 border-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-all duration-700 animate-spin-slow text-5xl font-normal"></div>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
@@ -224,21 +254,8 @@ export default function Portfolio() {
               <span className="gradient-text block animate-slide-in-right hover:animate-pulse">Niwamanya</span>
             </h1>
 
-            <p
-              className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed animate-fade-in-up"
-              style={{
-                animationDelay: "0.3s",
-                background: "linear-gradient(90deg, transparent 0%, currentColor 50%, transparent 100%)",
-                backgroundSize: "200% 100%",
-                animation: "shimmer 3s ease-in-out infinite, fade-in-up 1s ease-out 0.3s both",
-              }}
-            >
-              Safety Professional & Developer crafting secure digital experiences with IOSH certification and coding
-              expertise.
-            </p>
-
             <div
-              className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up"
+              className="flex flex-col gap-4 animate-fade-in-up sm:flex-row justify-between"
               style={{ animationDelay: "0.6s" }}
             >
               <Button
@@ -289,100 +306,6 @@ export default function Portfolio() {
         />
       </section>
 
-      <section id="work" className="py-20 px-6" data-animate>
-        <div className="max-w-7xl mx-auto">
-          <div
-            className={`text-center mb-16 transition-all duration-1000 ${visibleSections.has("work") ? "animate-fade-in-up" : "opacity-0 translate-y-10"}`}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 gradient-text animate-fade-in-up">Selected Work</h2>
-            <p
-              className="text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in-up"
-              style={{ animationDelay: "0.2s" }}
-            >
-              A curated collection of projects showcasing creativity, technical expertise, and attention to detail.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project, index) => (
-              <Card
-                key={project.id}
-                className={`group glass-card border-white/10 overflow-hidden hover-lift cursor-pointer transform transition-all duration-700 hover:scale-110 hover:rotate-2 hover:shadow-2xl ${
-                  visibleSections.has("work") ? "animate-slide-in-up" : "opacity-0 translate-y-20"
-                }`}
-                style={{
-                  animationDelay: `${index * 0.15}s`,
-                  transform: `translateY(${Math.sin((scrollY + index * 100) * 0.005) * 8}px) rotateX(${Math.cos((scrollY + index * 50) * 0.003) * 2}deg)`,
-                }}
-              >
-                <div className="relative overflow-hidden">
-                  <img
-                    src={project.image || "/placeholder.svg"}
-                    alt={project.title}
-                    className="w-full h-64 object-cover transition-all duration-1000 group-hover:scale-125 group-hover:brightness-110 group-hover:saturate-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-purple-500/10 to-pink-500/20 opacity-0 group-hover:opacity-100 transition-all duration-700" />
-
-                  <Badge className="absolute top-4 left-4 glass border-white/20 transform transition-all duration-500 group-hover:scale-125 group-hover:rotate-3">
-                    {project.category}
-                  </Badge>
-
-                  <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="glass border-white/20 bg-white/10 hover:bg-white/20 transform hover:scale-125 hover:rotate-12 transition-all duration-300"
-                      asChild
-                      style={{ animationDelay: "0.1s" }}
-                    >
-                      <a href={project.github} target="_blank" rel="noopener noreferrer">
-                        <Github className="w-4 h-4" />
-                      </a>
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="glass border-white/20 bg-white/10 hover:bg-white/20 transform hover:scale-125 hover:-rotate-12 transition-all duration-300"
-                      asChild
-                      style={{ animationDelay: "0.2s" }}
-                    >
-                      <a href={project.live} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-all duration-500 group-hover:translate-x-2">
-                    {project.title}
-                  </h3>
-                  <p className="text-muted-foreground mb-4 text-sm leading-relaxed group-hover:text-foreground transition-colors duration-500">
-                    {project.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {project.tags.map((tag, tagIndex) => (
-                      <Badge
-                        key={tag}
-                        variant="secondary"
-                        className="text-xs transform transition-all duration-500 hover:scale-125 hover:rotate-6 group-hover:bg-primary/10"
-                        style={{
-                          animationDelay: `${tagIndex * 0.1}s`,
-                          transitionDelay: `${tagIndex * 0.05}s`,
-                        }}
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section id="about" className="py-20 px-6 bg-gradient-to-r from-slate-50/50 to-blue-50/50" data-animate>
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -415,7 +338,7 @@ export default function Portfolio() {
             </div>
 
             <div className="relative">
-              <div className="w-32 h-32 mx-auto mb-8 rounded-full overflow-hidden soft-shadow">
+              <div className="w-40 h-40 mx-auto mb-8 rounded-full overflow-hidden soft-shadow">
                 <img
                   src="/el.jpg"
                   alt="Elius Niwamanya - Professional portrait"
@@ -426,213 +349,408 @@ export default function Portfolio() {
           </div>
 
           <div className="mb-16">
-            <h3 className="text-2xl font-bold mb-8 text-center gradient-text">Professional Certifications</h3>
+            <h3 className="text-2xl font-bold mb-8 text-center gradient-text">Featured Projects</h3>
+            <p className="text-center text-muted-foreground mb-12 max-w-3xl mx-auto">
+              Real-world applications showcasing the intersection of technology and safety management
+            </p>
+
             <div className="grid md:grid-cols-2 gap-8">
-              <div className="glass-card p-6 soft-shadow">
-                <div className="mb-4">
-                  <img
-                    src="/iosh-certificate.jpg"
-                    alt="IOSH Managing Safely Certificate"
-                    className="w-full rounded-lg"
-                  />
-                </div>
-                <h4 className="text-lg font-semibold mb-2">IOSH Managing Safely</h4>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Institution of Occupational Safety and Health certification for workplace safety management.
-                  Certificate #09690803-01-IHQK, issued May 13, 2025.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <Badge variant="secondary" className="text-xs">
-                    IOSH
-                  </Badge>
+              {/* HSE Management System */}
+              <div className="glass-card p-8 soft-shadow hover-lift transform hover:scale-105 transition-all duration-500 group">
+                <div className="flex items-center justify-between mb-4">
                   <Badge variant="secondary" className="text-xs">
                     Safety Management
                   </Badge>
-                  <Badge variant="secondary" className="text-xs">
-                    Workplace Safety
-                  </Badge>
+                  <div className="text-2xl">🛡️</div>
                 </div>
-                <Button
-                  className="w-full glass border-white/20 bg-transparent"
-                  variant="outline"
-                  onClick={() => handleDownload("/iosh-certificate.jpg", "Elius_Niwamanya_IOSH_Certificate.jpg")}
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download IOSH Certificate
-                </Button>
+
+                <h4 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-300">
+                  HSE Management System
+                </h4>
+
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Comprehensive Health, Safety & Environment management platform for construction projects. Features
+                  risk assessment tools, incident reporting, safety training modules, and compliance tracking.
+                </p>
+
+                <div className="mb-6">
+                  <h5 className="font-semibold mb-3 text-sm text-primary">Technologies Used</h5>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      React
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      Node.js
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      MongoDB
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      Express
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      Chart.js
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h5 className="font-semibold mb-3 text-sm text-primary">Key Features</h5>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start space-x-2">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Real-time incident reporting</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Risk assessment workflows</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Safety training tracking</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Compliance dashboard</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Mobile-responsive design</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 rounded-lg p-4 mb-6">
+                  <p className="text-sm text-muted-foreground flex items-center">
+                    <span className="text-lg mr-2">💡</span>
+                    Used by 500+ construction workers at Trojan/National Project
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 glass border-white/20 bg-transparent hover:bg-blue-500/10 transition-all duration-300"
+                    asChild
+                  >
+                    <a href="https://github.com/s6ft256/track" target="_blank" rel="noopener noreferrer">
+                      Source Code
+                    </a>
+                  </Button>
+                </div>
               </div>
 
-              <div className="glass-card p-6 soft-shadow">
-                <div className="mb-4">
-                  <img src="/certificate.jpg" alt="Coding Fundamentals Certificate" className="w-full rounded-lg" />
-                </div>
-                <h4 className="text-lg font-semibold mb-2">Coding Fundamentals</h4>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Comprehensive coding fundamentals certification from Grasshopper, completed July 11, 2019. Foundation
-                  in JavaScript, HTML, and CSS.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
+              {/* Weather Forecast App */}
+              <div className="glass-card p-8 soft-shadow hover-lift transform hover:scale-105 transition-all duration-500 group">
+                <div className="flex items-center justify-between mb-4">
                   <Badge variant="secondary" className="text-xs">
+                    Web Application
+                  </Badge>
+                  <div className="text-2xl">🌤️</div>
+                </div>
+
+                <h4 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors duration-300">
+                  Weather Forecast App
+                </h4>
+
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  Modern weather application with real-time forecasts, interactive maps, and severe weather alerts.
+                  Clean, intuitive interface with location-based services and 7-day forecasts.
+                </p>
+
+                <div className="mb-6">
+                  <h5 className="font-semibold mb-3 text-sm text-primary">Technologies Used</h5>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      React
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      OpenWeather API
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      Chart.js
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      Geolocation API
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      CSS3
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h5 className="font-semibold mb-3 text-sm text-primary">Key Features</h5>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start space-x-2">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Real-time weather data</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>7-day forecast</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Interactive weather maps</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Severe weather alerts</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <div className="w-1.5 h-1.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                      <span>Location-based services</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-gradient-to-r from-blue-50/50 to-purple-50/50 rounded-lg p-4 mb-6">
+                  <p className="text-sm text-muted-foreground flex items-center">
+                    <span className="text-lg mr-2">💡</span>
+                    Clean, user-friendly interface with responsive design
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 glass border-white/20 bg-transparent hover:bg-blue-500/10 transition-all duration-300"
+                    disabled
+                  >
+                    Live Demo
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold mb-8 text-center gradient-text">Professional Experience</h3>
+            <div className="glass-card p-8 soft-shadow">
+              <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-6">
+                <div>
+                  <h4 className="text-xl font-bold mb-2">Safety Officer</h4>
+                  <p className="text-lg text-primary font-semibold mb-1">Trojan / National Project Construction</p>
+                  <p className="text-sm text-muted-foreground">Construction Site • Full-time</p>
+                </div>
+                <div className="mt-4 md:mt-0">
+                  <Badge variant="secondary" className="text-sm">
+                    2023 - Present
+                  </Badge>
+                </div>
+              </div>
+
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                Real-world impact in safety management and construction projects, implementing comprehensive HSE systems
+                and ensuring workplace safety compliance across large-scale construction operations.
+              </p>
+
+              <div className="mb-6">
+                <h5 className="font-semibold mb-4 text-primary">Key Achievements</h5>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-sm text-muted-foreground">
+                      Implemented HSE management systems reducing workplace incidents by 40%
+                    </p>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-sm text-muted-foreground">
+                      Conducted daily safety inspections and risk assessments for 500+ workers
+                    </p>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-sm text-muted-foreground">
+                      Developed and delivered safety training programs achieving 98% compliance
+                    </p>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-sm text-muted-foreground">
+                      Created digital incident reporting system improving response time by 60%
+                    </p>
+                  </div>
+                  <div className="flex items-start space-x-3 md:col-span-2">
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                    <p className="text-sm text-muted-foreground">
+                      Maintained IOSH safety standards across multiple construction phases
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h5 className="font-semibold mb-4 text-primary">Core Skills Applied</h5>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className="text-xs">
+                    HSE Management
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Risk Assessment
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Safety Training
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Incident Investigation
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    IOSH Standards
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Construction Safety
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Digital Systems
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Team Leadership
+                  </Badge>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold mb-8 text-center gradient-text">Technical Skills</h3>
+            <p className="text-center text-muted-foreground mb-12 max-w-3xl mx-auto">
+              Comprehensive technical expertise spanning development, data analysis, machine learning, and cybersecurity
+            </p>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Web Development */}
+              <div className="glass-card p-6 soft-shadow hover-lift transform hover:scale-105 transition-all duration-500 group">
+                <div className="text-3xl mb-4 text-center">💻</div>
+                <h4 className="text-lg font-bold mb-3 text-center group-hover:text-primary transition-colors duration-300">
+                  Web Development
+                </h4>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <Badge variant="outline" className="text-xs">
+                    React
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Node.js
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
                     JavaScript
                   </Badge>
-                  <Badge variant="secondary" className="text-xs">
-                    HTML
+                  <Badge variant="outline" className="text-xs">
+                    HTML/CSS
                   </Badge>
-                  <Badge variant="secondary" className="text-xs">
-                    CSS
+                  <Badge variant="outline" className="text-xs">
+                    MongoDB
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Express
                   </Badge>
                 </div>
-                <Button
-                  className="w-full glass border-white/20 bg-transparent"
-                  variant="outline"
-                  onClick={() => handleDownload("/certificate.jpg", "Elius_Niwamanya_Coding_Certificate.jpg")}
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Download Coding Certificate
-                </Button>
+              </div>
+
+              {/* Python & ML */}
+              <div className="glass-card p-6 soft-shadow hover-lift transform hover:scale-105 transition-all duration-500 group">
+                <div className="text-3xl mb-4 text-center">🐍</div>
+                <h4 className="text-lg font-bold mb-3 text-center group-hover:text-primary transition-colors duration-300">
+                  Python & ML
+                </h4>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <Badge variant="outline" className="text-xs">
+                    Python
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Machine Learning
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Pandas
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    NumPy
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Scikit-learn
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    TensorFlow
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Data Analysis */}
+              <div className="glass-card p-6 soft-shadow hover-lift transform hover:scale-105 transition-all duration-500 group">
+                <div className="text-3xl mb-4 text-center">📊</div>
+                <h4 className="text-lg font-bold mb-3 text-center group-hover:text-primary transition-colors duration-300">
+                  Data Analysis
+                </h4>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <Badge variant="outline" className="text-xs">
+                    Data Mining
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Statistical Analysis
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Visualization
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Matplotlib
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Seaborn
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Jupyter
+                  </Badge>
+                </div>
+              </div>
+
+              {/* Cybersecurity */}
+              <div className="glass-card p-6 soft-shadow hover-lift transform hover:scale-105 transition-all duration-500 group">
+                <div className="text-3xl mb-4 text-center">🔒</div>
+                <h4 className="text-lg font-bold mb-3 text-center group-hover:text-primary transition-colors duration-300">
+                  Cybersecurity
+                </h4>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  <Badge variant="outline" className="text-xs">
+                    Penetration Testing
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Vulnerability Assessment
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Network Security
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Ethical Hacking
+                  </Badge>
+                  <Badge variant="outline" className="text-xs">
+                    Security Auditing
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 text-center">
+              <div className="glass-card p-6 max-w-4xl mx-auto">
+                <h4 className="text-lg font-semibold mb-4 text-primary">Technical Expertise Overview</h4>
+                <p className="text-muted-foreground leading-relaxed">
+                  My technical skill set combines traditional web development with advanced data science and
+                  cybersecurity capabilities. This unique combination allows me to build secure, data-driven
+                  applications while maintaining the highest standards of safety and security - essential for modern
+                  digital solutions in safety-critical environments.
+                </p>
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      <section id="contact" className="py-20 px-6" data-animate>
-        <div className="max-w-2xl mx-auto text-center">
-          <h2
-            className={`text-4xl font-bold mb-6 gradient-text transition-all duration-1000 ${visibleSections.has("contact") ? "animate-fade-in-up" : "opacity-0 translate-y-10"}`}
-          >
-            Let's Create Together
-          </h2>
-          <p
-            className={`text-xl text-muted-foreground mb-8 leading-relaxed transition-all duration-1000 ${visibleSections.has("contact") ? "animate-fade-in-up" : "opacity-0 translate-y-10"}`}
-            style={{ animationDelay: "0.2s" }}
-          >
-            Ready to bring your vision to life? I'd love to hear about your project and explore how we can work
-            together.
-          </p>
-
-          <div
-            className={`grid md:grid-cols-2 gap-6 mb-8 transition-all duration-1000 ${visibleSections.has("contact") ? "animate-fade-in-up" : "opacity-0 translate-y-10"}`}
-            style={{ animationDelay: "0.4s" }}
-          >
-            <div className="glass-card p-6 hover-lift transform hover:scale-110 hover:-rotate-2 transition-all duration-500 group">
-              <Phone className="w-8 h-8 mx-auto mb-4 text-primary group-hover:animate-bounce" />
-              <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors duration-300">WhatsApp</h3>
-              <p className="text-muted-foreground mb-4">+971 55 262 3327</p>
-              <Button
-                className="w-full glass border-white/20 bg-transparent hover:bg-green-500/10 hover:border-green-500/30 transition-all duration-500 relative overflow-hidden group/btn"
-                variant="outline"
-                asChild
-              >
-                <a
-                  href="https://wa.me/971552623327"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2"
-                >
-                  <Phone className="w-4 h-4 group-hover/btn:animate-pulse" />
-                  Message on WhatsApp
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 transform -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-500"></div>
-                </a>
-              </Button>
-            </div>
-            <div className="glass-card p-6 hover-lift transform hover:scale-110 hover:rotate-2 transition-all duration-500 group">
-              <Mail className="w-8 h-8 mx-auto mb-4 text-primary group-hover:animate-bounce" />
-              <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors duration-300">Email</h3>
-              <p className="text-muted-foreground mb-4">niwamanyaelius95@gmail.com</p>
-              <Button
-                className="w-full glass border-white/20 bg-transparent hover:bg-blue-500/10 hover:border-blue-500/30 transition-all duration-500 relative overflow-hidden group/btn"
-                variant="outline"
-                asChild
-              >
-                <a href="mailto:niwamanyaelius95@gmail.com" className="flex items-center justify-center gap-2">
-                  <Mail className="w-4 h-4 group-hover/btn:animate-pulse" />
-                  Send Email
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 transform -translate-x-full group-hover/btn:translate-x-0 transition-transform duration-500"></div>
-                </a>
-              </Button>
-            </div>
-          </div>
-
-          <div
-            className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in-up"
-            style={{ animationDelay: "0.6s" }}
-          >
-            <Button size="lg" className="soft-shadow hover-lift transform hover:scale-110 transition-all duration-500">
-              Start a Project
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="glass-card border-white/20 hover-lift bg-transparent transform hover:scale-110 transition-all duration-500"
-            >
-              Schedule a Call
-            </Button>
-          </div>
-
-          <div
-            className="flex justify-center space-x-6 flex-wrap gap-4 animate-fade-in-up"
-            style={{ animationDelay: "0.8s" }}
-          >
-            <a
-              href="https://www.linkedin.com/in/elius-niwamanya-026228187"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-all duration-500 transform hover:scale-110"
-            >
-              LinkedIn
-            </a>
-            <a
-              href="https://www.facebook.com/share/1BGED9N6Ax/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-all duration-500 transform hover:scale-110"
-            >
-              Facebook
-            </a>
-            <a
-              href="https://x.com/Elius7c"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-all duration-500 transform hover:scale-110"
-            >
-              Twitter
-            </a>
-            <a
-              href="https://www.instagram.com/niwamanyaelius95/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-all duration-500 transform hover:scale-110"
-            >
-              Instagram
-            </a>
-            <a
-              href="https://www.reddit.com/u/NIWAMANYAELIUS/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-all duration-500 transform hover:scale-110"
-            >
-              Reddit
-            </a>
-            <a
-              href="https://discord.gg/BzhZpcvC"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-all duration-500 transform hover:scale-110"
-            >
-              Discord
-            </a>
+          <div className="mb-16">
+            <h3 className="text-2xl font-bold mb-8 text-center gradient-text">Professional Certifications</h3>
           </div>
         </div>
       </section>
-
-      <footer className="py-8 px-6 border-t border-white/20">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-muted-foreground animate-fade-in">
-            © 2024 Elius Niwamanya. Crafted with passion and attention to detail.
-          </p>
-        </div>
-      </footer>
     </div>
   )
 }

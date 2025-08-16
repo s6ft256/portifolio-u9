@@ -210,6 +210,117 @@
   .backdrop-blur-cinematic {
     backdrop-filter: blur(32px) saturate(180%) brightness(120%);
   }
+
+  /* Advanced cinematic animations and effects */
+  .animate-typewriter {
+    animation: typewriter 3s steps(40, end), blink-caret 0.75s step-end infinite;
+  }
+
+  .animate-slide-in-up {
+    animation: slideInUp 0.8s ease-out forwards;
+  }
+
+  .animate-spin-slow {
+    animation: spin 8s linear infinite;
+  }
+
+  .animate-rainfall {
+    animation: rainfall 2s linear infinite;
+  }
+
+  .animate-rainfall-intense {
+    animation: rainfallIntense 1.5s linear infinite;
+  }
+
+  .animate-rainfall-heavy {
+    animation: rainfallHeavy 1s linear infinite;
+  }
+
+  .animate-rainfall-light {
+    animation: rainfallLight 3s linear infinite;
+  }
+
+  .animate-thunder-flash {
+    animation: thunderFlash 8s ease-in-out infinite;
+  }
+
+  .ripple-effect {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ripple-effect::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .ripple-effect:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .magnetic-hover {
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .magnetic-hover:hover {
+    transform: scale(1.05) translateZ(0);
+  }
+
+  .stagger-1 {
+    animation-delay: 0.1s;
+  }
+  .stagger-2 {
+    animation-delay: 0.2s;
+  }
+  .stagger-3 {
+    animation-delay: 0.3s;
+  }
+  .stagger-4 {
+    animation-delay: 0.4s;
+  }
+  .stagger-5 {
+    animation-delay: 0.5s;
+  }
+
+  .glass-premium {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(40px) saturate(200%) brightness(120%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05) inset, 0 0 20px
+      rgba(59, 130, 246, 0.1);
+  }
+
+  .cursor-trail {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .perspective-enhanced {
+    transform-style: preserve-3d;
+    perspective: 1200px;
+  }
+
+  .transform-3d {
+    transform: rotateX(5deg) rotateY(10deg) translateZ(20px);
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .transform-3d:hover {
+    transform: rotateX(0deg) rotateY(0deg) translateZ(40px) scale(1.05);
+  }
 }
 
 html {
@@ -245,19 +356,6 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, rgba(59, 130, 246, 1), rgba(147, 51, 234, 1));
-}
-
-/* Advanced cinematic animations and effects */
-.animate-typewriter {
-  animation: typewriter 3s steps(40, end), blink-caret 0.75s step-end infinite;
-}
-
-.animate-slide-in-up {
-  animation: slideInUp 0.8s ease-out forwards;
-}
-
-.animate-spin-slow {
-  animation: spin 8s linear infinite;
 }
 
 @keyframes typewriter {
@@ -308,14 +406,6 @@ html {
   }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
-}
-
 @keyframes float {
   0%,
   100% {
@@ -323,17 +413,6 @@ html {
   }
   50% {
     transform: translateY(-10px);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -390,34 +469,82 @@ html {
   }
 }
 
-/* Advanced hover and interaction effects */
-.magnetic-hover {
-  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+@keyframes rainfall {
+  0% {
+    transform: translateY(-100vh) rotate(15deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(100vh) rotate(15deg);
+    opacity: 0;
+  }
 }
 
-.magnetic-hover:hover {
-  transform: scale(1.05) translateZ(0);
+@keyframes rainfallIntense {
+  0% {
+    transform: translateY(-120vh) rotate(20deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.9;
+  }
+  95% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(120vh) rotate(20deg);
+    opacity: 0;
+  }
 }
 
-.ripple-effect {
-  position: relative;
-  overflow: hidden;
+@keyframes rainfallHeavy {
+  0% {
+    transform: translateY(-150vh) rotate(25deg) scale(1.5);
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(150vh) rotate(25deg) scale(1.5);
+    opacity: 0;
+  }
 }
 
-.ripple-effect::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.5);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+@keyframes rainfallLight {
+  0% {
+    transform: translateY(-80vh) rotate(10deg) scale(0.7);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.4;
+  }
+  85% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(80vh) rotate(10deg) scale(0.7);
+    opacity: 0;
+  }
 }
 
-.ripple-effect:hover::before {
-  width: 300px;
-  height: 300px;
+@keyframes thunderFlash {
+  0%,
+  90%,
+  100% {
+    opacity: 0;
+  }
+  5%,
+  85% {
+    opacity: 0.3;
+  }
 }

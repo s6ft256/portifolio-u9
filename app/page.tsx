@@ -518,7 +518,7 @@ export default function Portfolio() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8">
             {/* Web Development */}
             <div className="glass-matrix-card p-6 hover:scale-105 transition-all duration-300 matrix-glow">
               <div className="text-center mb-4">
@@ -611,6 +611,33 @@ export default function Portfolio() {
                 </Badge>
                 <Badge className="glass-matrix text-green-400 border-green-500/30 w-full justify-center">
                   Risk Analysis
+                </Badge>
+              </div>
+            </div>
+
+            {/* HSE & Events */}
+            <div className="glass-matrix-card p-6 hover:scale-105 transition-all duration-300 matrix-glow">
+              <div className="text-center mb-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-black font-bold">⚡</span>
+                </div>
+                <h3 className="text-lg font-bold text-green-400">HSE & Events</h3>
+              </div>
+              <div className="space-y-2">
+                <Badge className="glass-matrix text-green-400 border-green-500/30 w-full justify-center">
+                  HSE Officer
+                </Badge>
+                <Badge className="glass-matrix text-green-400 border-green-500/30 w-full justify-center">
+                  Plant Operations
+                </Badge>
+                <Badge className="glass-matrix text-green-400 border-green-500/30 w-full justify-center">
+                  Equipment Management
+                </Badge>
+                <Badge className="glass-matrix text-green-400 border-green-500/30 w-full justify-center">
+                  Event Industry
+                </Badge>
+                <Badge className="glass-matrix text-green-400 border-green-500/30 w-full justify-center">
+                  Safety Compliance
                 </Badge>
               </div>
             </div>
